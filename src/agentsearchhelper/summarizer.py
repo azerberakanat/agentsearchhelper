@@ -6,13 +6,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 LLM_BASE_URL = os.getenv("LLM_BASE_URL", "http://127.0.0.1:8888/v1")
-LLM_API_KEY = os.getenv("LLM_API_KEY", "sk-unsloth-YOUR_KEY")
 LLM_MODEL = os.getenv("LLM_MODEL", "unsloth/Qwen3.5-4B-MTP-GGUF:UD-Q4_K_XL")
 
 # Initialize OpenAI client with local custom endpoint
 client = OpenAI(
     base_url=LLM_BASE_URL,
-    api_key=LLM_API_KEY,
     timeout=60.0,  # Prevent hanging indefinitely
 )
 
