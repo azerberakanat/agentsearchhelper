@@ -19,22 +19,32 @@ Perform local, private, and cost-effective web research by querying a local Sear
 
 ## Usage
 
-Run the `agentsearchhelper` CLI command directly in bash:
+Run the `agentsearchhelper` CLI command directly in bash using one of the two available flows:
 
+### 1. Search Flow (Only --query)
+Queries local SearXNG, scrapes resulting pages, and summarizes relative to the query.
 ```bash
 agentsearchhelper --query "<search_query>" [options]
+```
+
+### 2. Guided Direct Flow (Both --url and --query)
+Scrapes the target URL directly and produces an open-eyed summary focused on the query/objective.
+```bash
+agentsearchhelper --url "<target_url>" --query "<search_query>" [options]
 ```
 
 ### Reference Options
 
 | Flag | Description | Default |
 | :--- | :--- | :--- |
-| `-q`, `--query` | The search query to execute (required). | None |
-| `-m`, `--max-results` | Maximum number of search results to crawl. | 3 |
-| `-t`, `--time-range` | Filter results by time range (`day`, `week`, `month`, `year`). | None |
-| `-c`, `--category` | Search category (e.g., `general`, `it`, `news`, `science`). | None |
-| `-e`, `--engines` | Comma-separated list of engines to query. | None |
-| `-l`, `--language` | Language code (e.g., `en`, `fr`, `de`). | None |
+| `-q`, `--query` | The search query to execute (required for all flows). | None |
+| `-u`, `--url` | Direct URL to scrape and summarize (optional, combines with `--query` for Guided Flow). | None |
+| `-d`, `--depth` | Maximum crawling depth for guided direct flow. | 6 |
+| `-m`, `--max-results` | Maximum number of search results to crawl (Search Flow only). | 3 |
+| `-t`, `--time-range` | Filter results by time range (`day`, `week`, `month`, `year`) (Search Flow only). | None |
+| `-c`, `--category` | Search category (e.g., `general`, `it`, `news`, `science`) (Search Flow only). | None |
+| `-e`, `--engines` | Comma-separated list of engines to query (Search Flow only). | None |
+| `-l`, `--language` | Language code (e.g., `en`, `fr`, `de`) (Search Flow only). | None |
 | `--benchmark` | Display detailed execution times for each phase. | False |
 
 ### Execution Examples
@@ -42,6 +52,12 @@ agentsearchhelper --query "<search_query>" [options]
 ```bash
 # Query API changes for Next.js 15
 agentsearchhelper --query "Next.js 15 app router API changes" --benchmark
+
+# Scrape and summarize a webpage with a guided query/objective
+agentsearchhelper --url "https://github.com/DeusData/codebase-memory-mcp" --query "how semantic query is done" --benchmark
+
+# Guided exploration on a website with custom crawl depth limit
+agentsearchhelper --url "nextjs.org" --query "how to use adapter" --depth 6 --benchmark
 
 # Find recent news about Python releases filtering by the last week
 agentsearchhelper -q "Python 3.13 release notes" -t week -m 5
