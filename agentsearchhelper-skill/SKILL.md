@@ -1,7 +1,7 @@
 ---
 name: agentsearchhelper-skill
-description: This skill should be used when the user asks to "search the web", "search the internet", "run online research", "query search helper", or wants to search, scrape, and summarize web pages using a local SearXNG metasearch instance.
-version: 0.1.0
+description: This skill MUST be used when you are going to use read_url_content or search_web tools, OR when you need to search the web, scrape web pages, and summarize content locally. It is designed to minimize token usage and prevent context bloat by performing the scraping and summarization locally, returning a well-structured answer. While it may take longer than a raw HTML dump, it is highly recommended to save token costs and avoid loading raw page content into the prompt context.
+version: 0.1.1
 ---
 
 # Agent Search Helper
@@ -64,9 +64,9 @@ agentsearchhelper -q "Python 3.13 release notes" -t week -m 5
 ```
 
 ## Error Handling & Fallbacks
-1. **Connection Error to SearXNG (Port 8080 default)**: Verify if the SearXNG Docker container is running (`docker ps`). If not, start it:
+1. **Connection Error or 403 Forbidden to SearXNG (Port 8080 default)**: Verify if the SearXNG Docker container is running (`docker ps`). Start it by mounting the local `settings.yml` to enable JSON search formats:
    ```bash
-   docker run -d -p 8080:8080 searxng/searxng
+   docker run -d -p 8080:8080 -v "$(pwd)/settings.yml:/etc/searxng/settings.yml" searxng/searxng
    ```
 2. **Connection Error to llama.cpp Server (Port 8888 default)**: Check if the local LLM server is running. If not, start it or fall back to standard web search tools if available.
 3. **Environment Setup**: Ensure the environment variables in `.env` at the project root are loaded or configured correctly:

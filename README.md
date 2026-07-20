@@ -45,9 +45,9 @@ Commercial search engine APIs charge per query and are subject to strict rate li
 ## 📥 Installation
 
 ### 1. Run SearXNG
-Deploy SearXNG using Docker:
+Deploy SearXNG using Docker, mounting the local `settings.yml` to enable the JSON search format:
 ```bash
-docker run -d -p 8080:8080 searxng/searxng
+docker run -d -p 8080:8080 -v "$(pwd)/settings.yml:/etc/searxng/settings.yml" searxng/searxng
 ```
 
 ### 2. Start the llama.cpp Server
@@ -83,25 +83,40 @@ SEARXNG_URL=http://localhost:8080
 
 ## 📖 Usage
 
-### CLI Options
+### 1. Search Flow (Only `--query`)
+Queries local SearXNG, scrapes resulting pages, and summarizes relative to the query.
 ```bash
-agentsearchhelper --query "Your search query" [options]
+agentsearchhelper --query "<search_query>" [options]
 ```
+
+### 2. Guided Direct Flow (Both `--url` and `--query`)
+Scrapes the target URL directly and produces a query-focused summary, tracing internal links to find matching content.
+```bash
+agentsearchhelper --url "<target_url>" --query "<search_query>" [options]
+```
+
+### CLI Options
 
 | Option | Shortcut | Description | Default |
 | :--- | :--- | :--- | :--- |
-| `--query` | `-q` | **Required**. The search query to execute. | N/A |
-| `--max-results` | `-m` | Maximum number of search results to crawl. | `3` |
+| `--query` | `-q` | **Required**. The search query to execute (required for all flows). | N/A |
+| `--url` | `-u` | Direct URL to scrape and summarize (combines with `--query` for Guided Flow). | None |
+| `--depth` | `-d` | Maximum crawling depth for guided direct flow. | `6` |
+| `--max-results` | `-m` | Maximum number of search results to crawl (Search Flow only). | `3` |
 | `--model` | | Local LLM model identifier. | Loaded from `.env` |
-| `--time-range` | `-t` | Filter results by time range (`day`, `week`, `month`, `year`). | None |
-| `--category` | `-c` | Search category (e.g., `general`, `it`, `news`, `science`). | None |
-| `--engines` | `-e` | Comma-separated list of engines to query. | None |
-| `--language` | `-l` | Language code (e.g., `en`, `fr`, `de`). | None |
+| `--time-range` | `-t` | Filter results by time range (`day`, `week`, `month`, `year`) (Search Flow only). | None |
+| `--category` | `-c` | Search category (e.g., `general`, `it`, `news`, `science`) (Search Flow only). | None |
+| `--engines` | `-e` | Comma-separated list of engines to query (Search Flow only). | None |
+| `--language` | `-l` | Language code (e.g., `en`, `fr`, `de`) (Search Flow only). | None |
 | `--benchmark` | | Display detailed execution times for each phase. | Flag |
 
-### Example Query
+### Example Queries
 ```bash
+# Query API changes for Next.js 15
 agentsearchhelper --query "Next.js 15 app router API changes" --benchmark
+
+# Scrape and summarize a webpage with a guided query
+agentsearchhelper --url "https://github.com/DeusData/codebase-memory-mcp" --query "how semantic query is done" --benchmark
 ```
 
 ---
